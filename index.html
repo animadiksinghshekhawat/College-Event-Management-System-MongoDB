@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Event Management System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-content">
+      <span class="badge">EVENT MANAGEMENT</span>
+      <h1>College Event Management System</h1>
+      <p>Manage events, participants, registrations and feedback in one place.</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="stats">
+      <div class="stat-card"><span class="stat-icon">📅</span><div><b id="eventsCount">0</b><span>Events</span></div></div>
+      <div class="stat-card"><span class="stat-icon">👥</span><div><b id="participantsCount">0</b><span>Participants</span></div></div>
+      <div class="stat-card"><span class="stat-icon">🎟️</span><div><b id="registrationsCount">0</b><span>Registrations</span></div></div>
+      <div class="stat-card"><span class="stat-icon">⭐</span><div><b id="feedbackCount">0</b><span>Feedback</span></div></div>
+    </section>
+
+    <div id="message" class="message hidden"></div>
+
+    <section class="grid-2">
+      <section class="card">
+        <div class="card-title"><div><span class="section-label">CREATE</span><h2>Add Event</h2></div></div>
+        <form id="eventForm">
+          <input name="name" placeholder="Event name" required>
+          <div class="form-row"><input name="date" type="date" required><input name="venue" placeholder="Venue" required></div>
+          <textarea name="description" placeholder="Event description"></textarea>
+          <button class="primary">Add Event</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-title"><div><span class="section-label">CREATE</span><h2>Add Participant</h2></div></div>
+        <form id="participantForm">
+          <input name="name" placeholder="Full name" required>
+          <div class="form-row"><input name="email" type="email" placeholder="Email" required><input name="phone" placeholder="Phone"></div>
+          <input name="course" placeholder="Course / Branch">
+          <button class="primary">Add Participant</button>
+        </form>
+      </section>
+    </section>
+
+    <section class="card">
+      <div class="card-title"><div><span class="section-label">REGISTRATION</span><h2>Register Participant</h2></div></div>
+      <form id="registrationForm" class="inline-form">
+        <select name="eventId" id="eventSelect" required><option value="">Select event</option></select>
+        <select name="participantId" id="participantSelect" required><option value="">Select participant</option></select>
+        <button class="primary">Register</button>
+      </form>
+    </section>
+
+    <section class="grid-2">
+      <section class="card">
+        <div class="card-title"><div><span class="section-label">FEEDBACK</span><h2>Give Feedback</h2></div></div>
+        <form id="feedbackForm">
+          <div class="form-row"><select name="eventId" id="feedbackEvent" required></select><select name="participantId" id="feedbackParticipant" required></select></div>
+          <div class="form-row"><input name="rating" type="number" min="1" max="5" placeholder="Rating 1-5" required><input name="comment" placeholder="Comment"></div>
+          <button class="primary">Submit Feedback</button>
+        </form>
+      </section>
+      <section class="card about-card">
+        <span class="section-label">DATABASE OPERATIONS</span>
+        <h2>CRUD + Data Manipulation</h2>
+        <p><b>Create:</b> add records</p><p><b>Read:</b> view and search records</p><p><b>Update:</b> edit events and participants</p><p><b>Delete:</b> remove records with related data cleanup</p>
+      </section>
+    </section>
+
+    <section class="card">
+      <div class="toolbar"><div><span class="section-label">MANAGE</span><h2>Events</h2></div><input id="eventSearch" class="search" placeholder="🔎 Search events..."></div>
+      <div id="eventList"></div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar"><div><span class="section-label">MANAGE</span><h2>Participants</h2></div><input id="participantSearch" class="search" placeholder="🔎 Search participants..."></div>
+      <div id="participantList"></div>
+    </section>
+
+
+    <section class="card">
+      <div class="toolbar">
+        <div><span class="section-label">MONGODB</span><h2>Aggregation Pipeline Analytics</h2></div>
+        <button class="primary" onclick="loadAnalytics()">↻ Refresh Analytics</button>
+      </div>
+      <div class="analytics-grid">
+        <div class="analytics-box"><span>Total Registrations</span><b id="aggTotalRegistrations">0</b></div>
+        <div class="analytics-box"><span>Events With Registrations</span><b id="aggEventsWithRegistrations">0</b></div>
+        <div class="analytics-box"><span>Avg. Registrations / Event</span><b id="aggAvgRegistrations">0.0</b></div>
+        <div class="analytics-box"><span>Avg. Rating</span><b id="aggAvgRating">0.0 ⭐</b></div>
+      </div>
+
+      <div class="analytics-tables">
+        <div>
+          <h3>Registrations per Event</h3>
+          <div id="eventAnalytics"></div>
+        </div>
+        <div>
+          <h3>Ratings per Event</h3>
+          <div id="ratingAnalytics"></div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Most Active Participants</h3>
+        <div id="participantAnalytics"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar"><div><span class="section-label">DATA</span><h2>Registrations</h2></div>
+      <div id="registrationList"></div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar"><div><span class="section-label">DATA</span><h2>Feedback</h2></div><div class="rating-summary">Average rating: <b id="averageRating">0.0</b> / 5</div></div>
+      <div id="feedbackList"></div>
+    </section>
+  </main>
+
+  <div id="editModal" class="modal hidden">
+    <div class="modal-box">
+      <button class="close" onclick="closeModal()">×</button>
+      <span class="section-label" id="modalLabel">EDIT</span>
+      <h2 id="modalTitle">Edit</h2>
+      <form id="editForm"></form>
+    </div>
+  </div>
+
+  <footer>College Event Management System • MongoDB + Node.js + Express</footer>
+  <script src="script.js"></script>
+</body>
+</html>
